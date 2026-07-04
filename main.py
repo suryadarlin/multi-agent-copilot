@@ -96,13 +96,15 @@ app = FastAPI() if FastAPI is not None else None
 # Use explicit localhost origins instead.
 if app is not None and CORSMiddleware is not None:
     app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5500",
+        "https://multi-agent-copilot-1.onrender.com"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class GenerateRequest(BaseModel):

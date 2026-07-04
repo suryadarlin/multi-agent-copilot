@@ -1,4 +1,4 @@
-const API_BASE = 'https://multi-agent-copilot.onrender.com';
+const API_BASE = "https://multi-agent-copilot.onrender.com";
 
 // ----------SECTION REQUEST HELPERS (avoid silent CORS/network failures)----------
 // Network error helper (fetch throws TypeError on CORS/network)

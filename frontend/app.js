@@ -1,7 +1,7 @@
 // app.js - vanilla JS for Student Management frontend
 
 // Change this if your FastAPI is hosted elsewhere.
-window.FRONTEND_API_BASE = "https://multi-agent-copilot.onrender.com";
+window.FRONTEND_API_BASE = const API_BASE = "https://multi-agent-copilot.onrender.com";
 
 function apiUrl(path) {
   const base = window.FRONTEND_API_BASE || '';
