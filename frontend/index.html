@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Engineering Copilot</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <h1 class="title">AI Engineering Copilot</h1>
+
+      <!-- SECTION 1 — AI Copilot -->
+      <section class="card">
+        <h2>Software requirement</h2>
+        <textarea id="prompt" rows="5" placeholder='e.g. "Create ecommerce API"'></textarea>
+
+        <div class="row">
+          <button id="generateBtn" type="button" class="btn">
+            <span id="btnText">Generate</span>
+            <span id="spinner" class="spinner" aria-hidden="true" hidden></span>
+          </button>
+        </div>
+
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+
+        <div class="copilotMeta" aria-live="polite">
+          <div><strong>success:</strong> <span id="success">—</span></div>
+          <div><strong>request_id:</strong> <span id="requestId">—</span></div>
+          <div><strong>elapsed_ms:</strong> <span id="elapsed">—</span></div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="card">
+          <h2>Generated files</h2>
+          <ul id="files" class="list"></ul>
+        </div>
+
+        <div class="card">
+          <h2>Critic feedback</h2>
+          <pre id="critic" class="pre">{}</pre>
+        </div>
+      </section>
+
+      <!-- SECTION 2 — Student Management -->
+      <section class="card">
+        <h2>Student Management</h2>
+
+        <form id="studentForm" class="form" autocomplete="off">
+          <div class="formGrid">
+            <label>
+              <span>Name</span>
+              <input id="studentName" type="text" name="name" required />
+            </label>
+
+            <label>
+              <span>Roll No</span>
+              <input id="studentRollNo" type="text" name="roll_no" required />
+            </label>
+
+            <label>
+              <span>Department</span>
+              <input id="studentDepartment" type="text" name="department" required />
+            </label>
+          </div>
+
+          <div class="row">
+            <button id="addStudentBtn" type="submit" class="btn">Add Student</button>
+          </div>
+
+          <p id="studentMsg" class="message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="row between">
+          <h2 style="margin:0;">Students</h2>
+          <button id="refreshStudentsBtn" type="button" class="secondaryBtn">Refresh</button>
+        </div>
+
+        <div id="tableWrap" class="tableWrap" style="display:block;">
+          <table class="table" aria-label="Students table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Roll No</th>
+                <th>Department</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="studentsTbody"></tbody>
+          </table>
+        </div>
+
+        <p id="studentsStatus" class="msg muted"></p>
+      </section>
+
+      <footer class="hint">
+        POST /generate • GET /students • POST /students • DELETE /students/{student_id}
+      </footer>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
+

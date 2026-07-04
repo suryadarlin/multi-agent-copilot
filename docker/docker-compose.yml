@@ -1,0 +1,51 @@
+# =============================================================================
+# AI Software Engineering Copilot — docker-compose
+# Single-service stack: dashboard app + persistent volumes for memory/logs.
+# =============================================================================
+
+version: "3.9"
+
+services:
+  copilot:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    image: ai-engineering-copilot:latest
+    container_name: ai_engineering_copilot
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8501}:8501"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - MEMORY_DB_PATH=/app/data/memory.sqlite3
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - SANDBOX_TIMEOUT_SECONDS=${SANDBOX_TIMEOUT_SECONDS:-30}
+    env_file:
+      - ../.env
+    volumes:
+      - copilot_data:/app/data
+      - copilot_output:/app/output
+      - copilot_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+
+volumes:
+  copilot_data:
+    driver: local
+  copilot_output:
+    driver: local
+  copilot_logs:
+    driver: local

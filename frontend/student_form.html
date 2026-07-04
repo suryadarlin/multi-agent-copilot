@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Management - Add/Edit</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div>
+        <h1>Add / Edit Student</h1>
+        <p class="muted">Simple form connected to FastAPI</p>
+      </div>
+      <nav class="nav">
+        <a class="link" href="./student_list.html">Students</a>
+        <a class="link" href="./dashboard.html">Dashboard</a>
+      </nav>
+    </header>
+
+    <section class="card">
+      <form id="studentForm" class="form">
+        <input type="hidden" id="studentId" />
+
+        <label for="name">Name</label>
+        <input id="name" type="text" required placeholder="Student name" />
+
+        <label for="age">Age</label>
+        <input id="age" type="number" min="0" placeholder="e.g. 20" />
+
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="name@example.com" />
+
+        <button class="primary" type="submit" id="submitBtn">Add Student</button>
+        <p id="formMsg" class="msg" role="status" aria-live="polite"></p>
+
+        <div class="row">
+          <button type="button" id="cancelBtn" class="secondaryBtn">Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <footer class="footer muted">Edit support expects PUT /students/{id} if available.</footer>
+  </div>
+
+  <script src="./app.js"></script>
+  <script>
+    const user = localStorage.getItem('student_admin_user');
+    if (!user) location.href = './login.html';
+
+    const form = document.getElementById('studentForm');
+    const msg = document.getElementById('formMsg');
+    const idEl = document.getElementById('studentId');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const params = new URLSearchParams(location.search);
+    const editId = params.get('id');
+
+    async function loadStudent(id) {
+      // Backend might not have GET /students/{id}. We'll fallback to GET /students list.
+      const all = await apiGetStudents();
+      if (!Array.isArray(all)) return null;
+      return all.find(s => String(s.id ?? s.student_id ?? '') === String(id)) || null;
+    }
+
+    if (editId) {
+      submitBtn.textContent = 'Save Changes';
+      const student = await loadStudent(editId);
+      if (student) {
+        idEl.value = String(student.id ?? student.student_id);
+        document.getElementById('name').value = student.name ?? '';
+        document.getElementById('age').value = student.age ?? '';
+        document.getElementById('email').value = student.email ?? '';
+      }
+    }
+
+    document.getElementById('cancelBtn').addEventListener('click', () => {
+      location.href = './student_list.html';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = '';
+      msg.classList.remove('error');
+      msg.classList.remove('ok');
+
+      const payload = {
+        name: document.getElementById('name').value.trim(),
+        age: document.getElementById('age').value ? Number(document.getElementById('age').value) : undefined,
+        email: document.getElementById('email').value.trim() || undefined,
+      };
+
+      // Remove undefined fields so backend can accept partial payloads.
+      Object.keys(payload).forEach(k => payload[k] === undefined && delete payload[k]);
+
+      const id = idEl.value;
+      try {
+        if (id) {
+          // Optional endpoint.
+          const res = await apiUpdateStudent(id, payload);
+          if (!res.ok) throw new Error(`Update failed (HTTP ${res.status})`);
+          msg.textContent = 'Student updated successfully.';
+          msg.classList.add('ok');
+        } else {
+          const res = await apiCreateStudent(payload);
+          if (!res.ok) throw new Error(`Create failed (HTTP ${res.status})`);
+          msg.textContent = 'Student added successfully.';
+          msg.classList.add('ok');
+        }
+
+        setTimeout(() => location.href = './student_list.html', 400);
+      } catch (err) {
+        msg.textContent = String(err.message || err);
+        msg.classList.add('error');
+      }
+    });
+  </script>
+</body>
+</html>
+

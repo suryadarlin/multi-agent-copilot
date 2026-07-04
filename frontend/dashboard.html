@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Management - Dashboard</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div>
+        <h1>Student Dashboard</h1>
+        <p class="muted" id="welcomeText">Welcome</p>
+      </div>
+      <nav class="nav">
+        <a class="link" href="./student_list.html">Students</a>
+        <a class="link" href="./student_form.html">Add Student</a>
+        <button id="logoutBtn" class="linkBtn" type="button">Logout</button>
+      </nav>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <h2>FastAPI Connection</h2>
+        <p class="muted">This UI calls the backend endpoints below on your FastAPI server:</p>
+        <ul class="miniList">
+          <li><strong>POST</strong> /students</li>
+          <li><strong>GET</strong> /students</li>
+          <li><strong>DELETE</strong> /students/{student_id}</li>
+          <li><strong>PUT</strong> /students/{student_id} (optional)</li>
+        </ul>
+        <p class="muted">Edit <code>FRONTEND_API_BASE</code> in <strong>app.js</strong> if needed.</p>
+      </div>
+
+      <div class="card">
+        <h2>Quick Actions</h2>
+        <div class="actions">
+          <a class="primary" href="./student_list.html">View Students</a>
+          <a class="primary secondary" href="./student_form.html">Add / Edit</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer muted">Demo frontend (HTML/CSS/Vanilla JS only).</footer>
+  </div>
+
+  <script src="./app.js"></script>
+  <script>
+    const user = localStorage.getItem('student_admin_user');
+    const welcomeText = document.getElementById('welcomeText');
+
+    if (!user) {
+      location.href = './login.html';
+    } else {
+      welcomeText.textContent = `Welcome, ${user}`;
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('student_admin_user');
+      location.href = './login.html';
+    });
+  </script>
+</body>
+</html>
+

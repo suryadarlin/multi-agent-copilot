@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Management - Login</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Student Management</h1>
+    <p class="muted">College project demo</p>
+
+    <form id="loginForm" class="card">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" required placeholder="your name" autocomplete="username" />
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required placeholder="••••••••" autocomplete="current-password" />
+
+      <button class="primary" type="submit">Login</button>
+      <p id="loginMsg" class="msg" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="footer muted">No backend auth implemented. Any credentials will work.</div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const msg = document.getElementById('loginMsg');
+
+    function setSession(user) {
+      localStorage.setItem('student_admin_user', user || 'user');
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      // Minimal demo behavior.
+      if (!username || !password) {
+        msg.textContent = 'Enter username and password.';
+        msg.classList.add('error');
+        return;
+      }
+
+      setSession(username);
+      msg.textContent = 'Login successful. Redirecting...';
+      msg.classList.remove('error');
+      setTimeout(() => {
+        location.href = './dashboard.html';
+      }, 300);
+    });
+  </script>
+</body>
+</html>
+

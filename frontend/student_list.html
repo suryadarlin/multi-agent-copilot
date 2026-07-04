@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Management - Students</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <div>
+        <h1>Students</h1>
+        <p class="muted" id="statusText">Loading...</p>
+      </div>
+      <nav class="nav">
+        <a class="link" href="./dashboard.html">Dashboard</a>
+        <a class="link" href="./student_form.html">Add Student</a>
+      </nav>
+    </header>
+
+    <section class="card">
+      <div class="row between">
+        <button class="secondaryBtn" type="button" id="refreshBtn">Refresh</button>
+        <a class="primary secondary" href="./student_form.html">Add Student</a>
+      </div>
+
+      <div id="tableWrap" class="tableWrap" style="display:none;">
+        <table class="table" aria-label="Students list">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="studentsTbody"></tbody>
+        </table>
+      </div>
+
+      <p id="msg" class="msg" role="status" aria-live="polite"></p>
+    </section>
+
+    <footer class="footer muted">Calls: GET /students, DELETE /students/{student_id}</footer>
+  </div>
+
+  <script src="./app.js"></script>
+  <script>
+    const user = localStorage.getItem('student_admin_user');
+    if (!user) location.href = './login.html';
+
+    const statusText = document.getElementById('statusText');
+    const msg = document.getElementById('msg');
+    const tbody = document.getElementById('studentsTbody');
+    const tableWrap = document.getElementById('tableWrap');
+
+    function normalizeStudents(data) {
+      if (Array.isArray(data)) return data;
+      if (data && typeof data === 'object') {
+        if (Array.isArray(data.items)) return data.items;
+        if (Array.isArray(data.students)) return data.students;
+        if (Array.isArray(data.data)) return data.data;
+      }
+      return [];
+    }
+
+    async function render() {
+      msg.textContent = '';
+      msg.classList.remove('error');
+      msg.classList.remove('ok');
+      tbody.innerHTML = '';
+      tableWrap.style.display = 'none';
+
+      statusText.textContent = 'Loading students...';
+      try {
+        const res = await apiGet('/students');
+        if (!res.ok) throw new Error(`Failed to fetch (HTTP ${res.status})`);
+        const data = await res.json();
+        const students = normalizeStudents(data);
+
+        if (students.length === 0) {
+          statusText.textContent = 'No students found.';
+          tableWrap.style.display = 'none';
+          return;
+        }
+
+        for (const s of students) {
+          const id = s.id ?? s.student_id ?? '';
+          const name = s.name ?? '';
+          const age = s.age ?? '';
+          const email = s.email ?? '';
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${String(id)}</td>
+            <td>${escapeHtml(String(name))}</td>
+            <td>${escapeHtml(String(age))}</td>
+            <td>${escapeHtml(String(email))}</td>
+            <td>
+              <a class="miniLink" href="./student_form.html?id=${encodeURIComponent(String(id))}">Edit</a>
+              <button class="miniBtn" type="button" data-id="${encodeURIComponent(String(id))}">Delete</button>
+            </td>
+          `;
+
+          tr.querySelector('button[data-id]').addEventListener('click', async (e) => {
+            const sid = e.currentTarget.getAttribute('data-id');
+            if (!confirm('Delete this student?')) return;
+            try {
+              const delRes = await apiDelete(`/students/${encodeURIComponent(sid)}`);
+              if (!delRes.ok) throw new Error(`Delete failed (HTTP ${delRes.status})`);
+              msg.textContent = 'Deleted successfully.';
+              msg.classList.add('ok');
+              await render();
+            } catch (err) {
+              msg.textContent = String(err.message || err);
+              msg.classList.add('error');
+            }
+          });
+
+          tbody.appendChild(tr);
+        }
+
+        tableWrap.style.display = 'block';
+        statusText.textContent = `Total: ${students.length}`;
+      } catch (err) {
+        statusText.textContent = 'Failed to load students.';
+        msg.textContent = String(err.message || err);
+        msg.classList.add('error');
+      }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', render);
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'<','>':'>','"':'"',"'":'&#039;'}[m]));
+    }
+
+    // Helpers expected from app.js
+    document.addEventListener('DOMContentLoaded', render);
+  </script>
+</body>
+</html>
+
