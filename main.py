@@ -214,6 +214,14 @@ async def home():
         "openapi": "/openapi.json"
     }
 
+@app.post("/run")
+def run():
+    return {
+        "success": True,
+        "message": "Backend connected successfully",
+        "status": "live"
+    }
+
 if __name__ == "__main__":
     sys.exit(main())
 
