@@ -1,7 +1,9 @@
 
-# 🤖 AI Software Engineering Copilot
+# 🤖 AI Engineering Copilot
 
-**An autonomous multi-agent system that plans, writes, tests, secures, and repairs software — like a real engineering team.**
+An AI-powered multi-agent software engineering assistant that automates the software development lifecycle using specialized AI agents.
+
+AI Engineering Copilot — A multi-agent AI system that automates software planning, code generation, code review, testing, security analysis, debugging, and workflow orchestration using Python, FastAPI, and Google Gemini.
 
 Capstone submission — 2026 Google + Kaggle AI Agents Intensive Course.
 
@@ -22,6 +24,25 @@ It demonstrates four core agentic-systems concepts from the course:
 
 
 ## 2. Architecture
+User Requirement
+        │
+        ▼
+ Orchestrator Agent
+        │
+ ┌──────┼─────────────┐
+ ▼      ▼             ▼
+Planner Code      Critic
+Agent   Agent      Agent
+ │        │           │
+ └──────┬─┴───────────┘
+        ▼
+ Test Agent
+        ▼
+ Security Agent
+        ▼
+ Debug Agent
+        ▼
+ Final Output
 
 ```
                     ┌──────────────┐
